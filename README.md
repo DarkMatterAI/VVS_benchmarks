@@ -1,2 +1,2 @@
-# VVS_benchmarks
-VVS paper benchmarks
+# VVS Benchmarks
+VVS paper benchmarks. Code release pending peer review.
