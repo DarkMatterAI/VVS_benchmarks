@@ -1,0 +1,13 @@
+torch==2.7.0
+transformers==4.51.3
+datasets==3.5.1
+duckdb==1.2.2
+pyarrow==19.0.1
+pandas==2.2.2
+rich==13.7.1
+tqdm==4.66.3
+numpy==2.2.5
+rdkit==2024.09.6
+seaborn==0.13.2
+scipy==1.15.2
+scienceplots
