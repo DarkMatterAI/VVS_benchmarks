@@ -1,0 +1,26 @@
+services:
+  bbknn_bench:
+    build:
+      context: .
+      dockerfile: bbknn.Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ../blob_store:/code/blob_store
+    networks:
+      - vvs_v2_network
+    entrypoint: []
+    command: ["bash", "-c", "echo 'Run via ./run.sh {bbknn|natprod|egfr}'"]
+    deploy:
+      restart_policy:
+        condition: any
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['${BBKNN_DEVICE_ID}']
+              capabilities: [gpu]
+
+networks:
+  vvs_v2_network:
+    external: true

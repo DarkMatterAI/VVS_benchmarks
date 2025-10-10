@@ -1,0 +1,21 @@
+bbknn_eval:
+  n_queries:    100
+  sizes:        [256]
+  k:            20
+  cpus:         40
+  iterations:   10
+natural_product_eval:
+  n_classes:    10
+  n_per_class:  100
+  sizes:        [256]
+  k:            5
+  cpus:         60
+  seed:         32
+  iterations:   10
+egfr_eval:
+  n_queries:   100
+  sizes:       [256]
+  k:           20
+  cpus:        60
+  score_chunk: 2000
+  rpc_timeout: 20
