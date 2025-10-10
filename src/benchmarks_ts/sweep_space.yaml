@@ -1,0 +1,19 @@
+runs:
+  - name: sweep1
+    params: 
+      warmup_percent:   [0.01, 0.1, 0.25, 0.5, 0.75, 0.9]
+    score_params:
+      # - score_name:      synthemol_rf
+      #   score_timeout:   120
+      # - score_name:      docking_2zdt
+      #   score_timeout:   400
+      # - score_name:      rocs_2chw
+      #   score_timeout:   400
+      - score_name:      erbb1_mlp
+        score_timeout:   120
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 3
+      num_proc: 32
+

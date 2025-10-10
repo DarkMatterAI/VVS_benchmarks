@@ -1,0 +1,16 @@
+services:
+  synthemol_bench:
+    build:
+      dockerfile: ts.Dockerfile
+    env_file: .env
+    environment:
+      - RUN_TYPE=debug
+      - RUN_NAME=dev
+    volumes:
+      - ../blob_store:/code/blob_store
+    networks:
+      - vvs_v2_network
+
+networks:
+  vvs_v2_network:
+    external: true
