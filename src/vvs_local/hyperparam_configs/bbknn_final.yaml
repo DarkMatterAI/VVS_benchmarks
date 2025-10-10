@@ -1,0 +1,61 @@
+engine_params:
+  engine: bbknn
+  embedding:
+    input_size: 256
+    output_size: 256
+  reaction_pool:
+    num_proc     : 48
+    cache_size   : 1000000
+    refresh_every: 100000
+runs:
+  - name: bbknn_final1
+    params: 
+      vvs_batch_size  : [16]
+      iterations      : [4]
+      exploit_percent : [0.5]
+      k_nn            : [5]
+      update_type     : [top1]
+      lrs             :
+        - [0, 1000, 2000, 3000, 4000, 5000, 6000]
+    scorers:
+      - plugin           : erbb1_mlp
+        timeout          : 30
+        score_batch_size : 1024
+        concurrency      : 6
+        device           : gpu
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 5
+  - name: bbknn_final2
+    params: 
+      vvs_batch_size  : [16]
+      iterations      : [4]
+      exploit_percent : [0.5]
+      k_nn            : [5]
+      update_type     : [top1]
+      lrs             :
+        - [0, 1000, 2000, 3000, 4000, 5000, 6000]
+    scorers:
+      - plugin           : docking_2zdt
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+      - plugin           : synthemol_rf
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+      - plugin           : rocs_2chw
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 5
+
+
+

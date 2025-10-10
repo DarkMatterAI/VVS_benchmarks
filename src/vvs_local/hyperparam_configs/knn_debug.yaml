@@ -1,0 +1,29 @@
+engine_params:
+  engine: knn
+  embedding:
+    size: 128
+runs:
+  - name: knn_debug3
+    params: 
+      vvs_batch_size  : [32]
+      iterations      : [2]
+      exploit_percent : [0.5]
+      k_nn            : [128]
+      update_type     : [top1]
+      lrs             :
+        - [0, 2500, 5000, 7500, 10000, 20000, 50000]
+    scorers:
+      # - plugin           : bench_dummy
+      #   timeout          : 15
+      #   score_batch_size : 1
+      #   concurrency      : 100
+      #   device           : cpu
+      - plugin           : erbb1_mlp
+        timeout          : 30
+        score_batch_size : 1024
+        concurrency      : 6
+        device           : gpu
+    run_params:
+      inference_budget: 5000
+      runtime_limit: 43200
+      replicas: 1

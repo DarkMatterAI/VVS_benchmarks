@@ -1,0 +1,44 @@
+engine: knn
+
+rank_caps: [8, 32, 64, 128, 256]
+
+embedding:
+  size : 256
+
+batching:
+  batch_size : 16
+  num_batches: 16
+
+learning_rates:
+  min  : 0
+  max  : 50000
+  steps: 100
+
+knn:
+  k_nn: 256
+
+scorers:
+  - plugin     : erbb1_mlp
+    timeout    : 20
+    batch_size : 1024
+    concurrency: 6
+    device     : gpu
+    budget     : 100000000
+  - plugin     : docking_2zdt
+    timeout    : 30
+    batch_size : 1
+    concurrency: 100
+    device     : cpu
+    budget     : 100000000
+  - plugin     : synthemol_rf
+    timeout    : 30
+    batch_size : 1
+    concurrency: 100
+    device     : cpu
+    budget     : 100000000
+  - plugin     : rocs_2chw
+    timeout    : 30
+    batch_size : 1
+    concurrency: 100
+    device     : cpu
+    budget     : 100000000

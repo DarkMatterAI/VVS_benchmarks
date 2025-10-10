@@ -1,0 +1,27 @@
+services:
+  vvs_local_bench:
+    build:
+      context: .
+      dockerfile: vvs_local.Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ../blob_store:/code/blob_store
+    networks:
+      - vvs_v2_network
+    entrypoint: [] 
+    command: ["bash", "-c", "echo 'Use ./run.sh'"]
+    deploy:
+      restart_policy:
+        condition: any
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              # device_ids: ['0', '1']
+              device_ids: ['${VVS_LOCAL_DEVICE_ID:-0}']
+              capabilities: [gpu]
+
+networks:
+  vvs_v2_network:
+    external: true

@@ -1,0 +1,121 @@
+engine_params:
+  engine: knn
+  embedding:
+    size: 128
+runs:
+  - name: knn_final1
+    params: 
+      vvs_batch_size  : [16]
+      iterations      : [4]
+      exploit_percent : [0.5]
+      k_nn            : [32]
+      update_type     : [top1]
+      lrs             :
+        - [0, 2500, 5000, 7500, 10000, 20000, 50000, 75000, 100000]
+    scorers:
+      - plugin           : erbb1_mlp
+        timeout          : 30
+        score_batch_size : 1024
+        concurrency      : 6
+        device           : gpu
+      - plugin           : docking_2zdt
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+      - plugin           : synthemol_rf
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 5
+  - name: knn_final2
+    params: 
+      vvs_batch_size  : [16]
+      iterations      : [4]
+      exploit_percent : [0.5]
+      k_nn            : [32]
+      update_type     : [top1]
+      lrs             :
+        - [0, 2500, 5000, 7500, 10000, 20000, 50000, 75000, 100000]
+    scorers:
+      - plugin           : rocs_2chw
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 5
+  - name: knn_final1
+    params: 
+      vvs_batch_size  : [32]
+      iterations      : [4]
+      exploit_percent : [0.5]
+      k_nn            : [32]
+      update_type     : [top1]
+      lrs             :
+        - [0, 2500, 5000, 7500, 10000, 20000, 50000]
+    scorers:
+      - plugin           : erbb1_mlp
+        timeout          : 30
+        score_batch_size : 1024
+        concurrency      : 6
+        device           : gpu
+      - plugin           : docking_2zdt
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+      - plugin           : synthemol_rf
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+      - plugin           : rocs_2chw
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 5
+  - name: knn_final1
+    params: 
+      vvs_batch_size  : [16]
+      iterations      : [4]
+      exploit_percent : [0.5]
+      k_nn            : [48]
+      update_type     : [top1]
+      lrs             :
+        - [0, 2500, 5000, 7500, 10000]
+    scorers:
+      - plugin           : erbb1_mlp
+        timeout          : 30
+        score_batch_size : 1024
+        concurrency      : 6
+        device           : gpu
+      - plugin           : docking_2zdt
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+      - plugin           : synthemol_rf
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+      - plugin           : rocs_2chw
+        timeout          : 30
+        score_batch_size : 1
+        concurrency      : 64
+        device           : cpu
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 5

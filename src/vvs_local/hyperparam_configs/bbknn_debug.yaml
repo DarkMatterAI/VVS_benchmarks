@@ -1,0 +1,34 @@
+engine_params:
+  engine: bbknn
+  embedding:
+    input_size: 256
+    output_size: 256
+  reaction_pool:
+    num_proc     : 48
+    cache_size   : 1000000
+    refresh_every: 100000
+runs:
+  - name: bbknn_debug1
+    params: 
+      vvs_batch_size  : [32]
+      iterations      : [2]
+      exploit_percent : [0.5]
+      k_nn            : [5]
+      update_type     : [top1]
+      lrs             :
+        - [0, 1000, 2000, 3000, 4000, 5000, 6000]
+    scorers:
+      # - plugin           : bench_dummy
+      #   timeout          : 15
+      #   score_batch_size : 1
+      #   concurrency      : 100
+      #   device           : cpu
+      - plugin           : erbb1_mlp
+        timeout          : 30
+        score_batch_size : 1024
+        concurrency      : 6
+        device           : gpu
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 2
