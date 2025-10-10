@@ -9,3 +9,5 @@ oe_license.txt
 diagrams/
 
 benchmarks_tmp/
+
+plugin_ids.json

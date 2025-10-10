@@ -1,0 +1,90 @@
+services:
+  score_consumer:
+    build: 
+      dockerfile: score_consumer.Dockerfile
+    env_file: .env
+    environment:
+      - SELF_CONTAINED=true
+      - OE_LICENSE=/run/secrets/oe_license_file
+    networks:
+      - vvs_v2_network
+    secrets:
+      - oe_license_file
+    volumes:
+      - ../blob_store/internal/processed:/code/processed
+    depends_on:
+      - rabbitmq
+    deploy:
+      restart_policy:
+        condition: any
+
+  score_consumer_gpu:
+    build:
+      dockerfile: score_consumer_gpu.Dockerfile
+      context: .
+    env_file: .env
+    environment:
+      - SELF_CONTAINED=true
+    networks:
+      - vvs_v2_network
+    volumes:
+      - ../blob_store/internal/processed:/code/processed
+    depends_on:
+      - rabbitmq
+    deploy:
+      restart_policy:
+        condition: any
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['${SCORE_CONSUMER_DEVICE_ID}']
+              capabilities: [gpu]
+
+  score_consumer_gpu2:
+    build:
+      dockerfile: score_consumer_gpu.Dockerfile
+      context: .
+    env_file: .env
+    environment:
+      - SELF_CONTAINED=true
+    networks:
+      - vvs_v2_network
+    volumes:
+      - ../blob_store/internal/processed:/code/processed
+    depends_on:
+      - rabbitmq
+    deploy:
+      restart_policy:
+        condition: any
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']
+              capabilities: [gpu]
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    env_file:
+      - .env
+    # expose:
+    #   - "5672"
+    #   - "15672"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - vvs_v2_network
+
+secrets:
+  oe_license_file:
+    file: secrets/oe_license.txt
+
+networks:
+  vvs_v2_network:
+    driver: bridge
+    name: vvs_v2_network
+
