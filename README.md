@@ -35,6 +35,8 @@ Order of operations:
         * `./src/model_evaluation/enamine_decomposer/run.sh generate` - generate analysis data
         * `./src/model_evaluation/enamine_decomposer/run.sh plot` - plot results
 4. Set up scoring endpoints
+    * Set up OpenEye license file
+        * Place OpenEye license at `./src/score_consumer/secrets/oe_license.txt`
     * If running with VVS:
         * Start VVS with Qdrant and Triton plugins enabled
         * `cd score_consumer/`

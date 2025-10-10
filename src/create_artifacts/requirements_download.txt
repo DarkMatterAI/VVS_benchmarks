@@ -1,0 +1,16 @@
+# ───── core downloader ───────────────────────────────────────────
+httpx[http2]==0.27.0          # async HTTP/2 client
+aiofiles==23.2.1              # async file writes
+tqdm==4.66.2                  # progress bars (used by Rich behind the scenes)
+rich==13.7.1                  # coloured logging & progress UI
+
+# ───── API / data pulls ──────────────────────────────────────────
+chembl_webresource_client==0.10.8   # ChEMBL REST client
+
+# ───── heavy-processing stage ────────────────────────────────────
+pandas==2.2.2                      # CSV + DataFrame ops
+duckdb==1.2.2                      # embedded DB
+pyarrow==19.0.1                    # for duckdb
+rdkit==2023.9.5                    # SMILES canonicalisation
+numpy<2                            # version required for _ARRAY_API error
+synthemol==1.0.4                   # for processing synthemol reaction pickle files
