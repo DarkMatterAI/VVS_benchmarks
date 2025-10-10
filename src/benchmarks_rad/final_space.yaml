@@ -1,0 +1,18 @@
+runs:
+  - name: sweep1
+    params: 
+      dataset: d4_138m
+    score_params:
+      - score_name:      erbb1_mlp
+        score_timeout:   120
+      - score_name:      synthemol_rf
+        score_timeout:   120
+      - score_name:      docking_2zdt
+        score_timeout:   400
+      - score_name:      rocs_2chw
+        score_timeout:   400
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 5
+      num_proc: 32

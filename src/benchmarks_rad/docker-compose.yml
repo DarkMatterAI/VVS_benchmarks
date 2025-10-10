@@ -1,0 +1,21 @@
+services:
+  rad:
+    build:
+      dockerfile: rad.Dockerfile
+    env_file: .env
+    environment:
+      - RUN_TYPE=debug
+      - RUN_NAME=dev
+    shm_size: 8g
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    volumes:
+      - ../blob_store:/code/blob_store
+    networks:
+      - vvs_v2_network     # to reach RabbitMQ if needed
+
+networks:
+  vvs_v2_network:
+    external: true
+
