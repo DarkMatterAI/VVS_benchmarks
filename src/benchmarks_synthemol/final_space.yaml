@@ -1,0 +1,21 @@
+runs:
+  - name: final1
+    params: 
+      max_reactions:    [1]
+      explore_weight:   [1.0]
+      num_expand_nodes: [100]
+      no_diversity:     [false]
+    score_params:
+      - score_name:      synthemol_rf
+        score_timeout:   30
+      - score_name:      docking_2zdt
+        score_timeout:   30
+      - score_name:      rocs_2chw
+        score_timeout:   30
+      - score_name:      erbb1_mlp
+        score_timeout:   30
+    run_params:
+      inference_budget: 50000
+      runtime_limit: 43200
+      replicas: 5
+      num_proc: 28

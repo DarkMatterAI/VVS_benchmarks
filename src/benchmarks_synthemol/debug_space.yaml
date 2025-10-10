@@ -1,0 +1,23 @@
+runs:
+  - name: dev1
+    params: 
+      max_reactions:    1
+      explore_weight:   [10]
+      num_expand_nodes: 10
+      no_diversity:     [false]
+    score_params:
+      # - score_name:     bench_dummy
+      #   score_timeout:  15
+      # - score_name:      synthemol_rf
+      #   score_timeout:   120
+      # - score_name:      docking_2zdt
+      #   score_timeout:   400
+      # - score_name:      rocs_2chw
+      #   score_timeout:   400
+      - score_name:      erbb1_mlp
+        score_timeout:   120
+    run_params:
+      inference_budget: 2000
+      runtime_limit: 100000
+      replicas: 1
+      num_proc: 8
