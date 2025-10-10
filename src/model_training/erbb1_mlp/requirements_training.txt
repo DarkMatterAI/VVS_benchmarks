@@ -1,0 +1,9 @@
+torch==2.2.1
+transformers==4.51.3
+datasets==2.19.1
+accelerate==1.6.0
+evaluate==0.4.3
+huggingface_hub==0.30.0
+rich==13.7.1
+tqdm==4.66.2
+numpy<2
