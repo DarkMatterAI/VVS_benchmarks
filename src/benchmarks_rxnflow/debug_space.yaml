@@ -1,0 +1,25 @@
+runs:
+  - name: dev1
+    params:
+      batch_size          : [50]
+      full_batch_size     : [256]
+      rand_act_prob       : [0.1]
+      act_subsample_ratio : [0.02]
+      use_replay          : [false]
+      warmup_percent      : [0.1]
+    score_params:
+      - score_name       : erbb1_mlp
+        timeout          : 30
+        score_batch_size : 1024
+        concurrency      : 6
+        device           : gpu
+      # - score_name       : bench_dummy
+      #   timeout          : 15
+      #   score_batch_size : 1
+      #   concurrency      : 8
+      #   device           : cpu
+    run_params:
+      inference_budget : 500 
+      runtime_limit    : 1800
+      replicas         : 2
+

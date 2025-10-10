@@ -1,0 +1,20 @@
+services:
+  rxnflow_bench:
+    build:
+      dockerfile: rxnflow.Dockerfile
+    env_file: .env
+    volumes:
+      - ../blob_store:/code/blob_store
+    networks:
+      - vvs_v2_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['${DEVICE_ID:-0}']
+              capabilities: [gpu]
+
+networks:
+  vvs_v2_network:
+    external: true

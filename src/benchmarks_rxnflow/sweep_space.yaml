@@ -1,0 +1,35 @@
+runs:
+  - name: sweep1
+    params:
+      batch_size          : [128, 256]
+      replay_batch_size   : [0, 128, 256]
+      rand_act_prob       : [0.1]
+      act_subsample_ratio : [0.02]
+      warmup_percent      : [0.02]
+    score_params:
+      - score_name       : erbb1_mlp
+        timeout          : 30
+        score_batch_size : 1024
+        concurrency      : 6
+        device           : gpu
+    run_params:
+      inference_budget : 50000 
+      runtime_limit    : 43200
+      replicas         : 3
+  - name: sweep2
+    params:
+      batch_size          : [128, 256]
+      replay_batch_size   : [0, 128, 256]
+      rand_act_prob       : [0.1]
+      act_subsample_ratio : [0.02]
+      warmup_percent      : [0.1]
+    score_params:
+      - score_name       : erbb1_mlp
+        timeout          : 30
+        score_batch_size : 1024
+        concurrency      : 6
+        device           : gpu
+    run_params:
+      inference_budget : 50000 
+      runtime_limit    : 43200
+      replicas         : 3
