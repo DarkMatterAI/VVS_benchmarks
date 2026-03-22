@@ -28,16 +28,6 @@ from .utils      import parse_run_name, load_one_run, summarise_scores
 
 console = Console()
 
-# plt.style.use(["science", "nature"])
-# plt.rcParams.update({
-#     "font.size": 10,
-#     "axes.labelsize": 12,
-#     "axes.titlesize": 14,
-#     "xtick.labelsize": 10,
-#     "ytick.labelsize": 10,
-#     "legend.fontsize": 10,
-# })
-
 default_font_size = mpl.rcParamsDefault['font.size']
 
 plt.rcParams.update({
@@ -387,11 +377,6 @@ def plot_agg_bars(agg: pd.DataFrame, prefix: str = ""):
         thi = _rt_trans(hi)
         return (ty - tlo, thi - ty)
 
-    # Figure
-    # if prefix=="enum_":
-    #     fig, axes = plt.subplots(1, 2, figsize=(28, 10))
-    # else:
-    #     fig, axes = plt.subplots(2, 2, figsize=(28, 20))
     fig, axes = plt.subplots(2, 2, figsize=(28, 20))
     axes = axes.flatten()
 

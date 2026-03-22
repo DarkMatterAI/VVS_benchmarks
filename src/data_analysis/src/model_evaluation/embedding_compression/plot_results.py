@@ -105,12 +105,6 @@ plt.rcParams['font.weight'] = 'bold'
 plt.rcParams['axes.labelweight'] = 'bold'
 plt.rcParams['axes.titleweight'] = 'bold'
 
-# COLORS = {
-#     "blue": "0C5DA5",
-#     "green": "00B945",
-#     "red": "FF2C00"
-# }
-
 COLORS = {
     "blue": "008cf9",
     "green": "006e00",
@@ -180,15 +174,6 @@ def _load_knn_dfs():
 
 
 # ╭───────────────────────────── plotting helpers ──────────────────────────────╮
-# plt.style.use(["science", "nature"])
-# plt.rcParams.update({
-#     "font.size": 10,
-#     "axes.labelsize": 12,
-#     "axes.titlesize": 14,
-#     "xtick.labelsize": 10,
-#     "ytick.labelsize": 10,
-#     "legend.fontsize": 10,
-# })
 
 def _write_csv(df: pd.DataFrame | list[dict] | dict, fname: str):
     """Always writes into FIG_DIR/raw/."""

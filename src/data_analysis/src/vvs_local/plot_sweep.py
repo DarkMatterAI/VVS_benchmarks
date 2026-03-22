@@ -30,16 +30,6 @@ from .constants import DATA_DIR, BENCH_DIR, ENGINE, FIG_DIR, RAW_DIR, COLORS
 
 console = Console()
 
-# plt.style.use(["science", "nature"])
-# plt.rcParams.update({
-#     "font.size": 10,
-#     "axes.labelsize": 12,
-#     "axes.titlesize": 14,
-#     "xtick.labelsize": 10,
-#     "ytick.labelsize": 10,
-#     "legend.fontsize": 10,
-# })
-
 default_font_size = mpl.rcParamsDefault['font.size']
 
 plt.rcParams.update({

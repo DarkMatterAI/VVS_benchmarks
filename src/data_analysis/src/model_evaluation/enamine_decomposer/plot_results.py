@@ -61,16 +61,6 @@ RUN_MAPPING = {
 
 K_TRAIN = 10
 
-# plt.style.use(["science", "nature"])
-# plt.rcParams.update({
-#     "font.size": 10,
-#     "axes.labelsize": 12,
-#     "axes.titlesize": 14,
-#     "xtick.labelsize": 10,
-#     "ytick.labelsize": 10,
-#     "legend.fontsize": 10,
-# })
-
 default_font_size = mpl.rcParamsDefault['font.size']
 
 plt.rcParams.update({
@@ -151,8 +141,6 @@ def _aggregate(curves: dict[str, list[float]],
 # ╰─────────────────────────────────────────────────────────────────────────────╯
 
 # ╭────────────────────────── molecule-panel helpers ────────────────────────╮
-# COLORS = {k: f"#{v.lower()}" for k, v in
-        #   {"blue": "0C5DA5", "green": "00B945", "red": "FF2C00"}.items()}
 
 COLORS = {
     "blue": "008cf9",

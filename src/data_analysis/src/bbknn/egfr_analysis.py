@@ -22,15 +22,6 @@ from .constants import FIG_DIR, RAW_DIR, ENAMINE_CLASS, EGFR_CLASS
 from .utils      import _pair_grid, load_data, _tight_save
 
 console = Console()
-# plt.style.use(["science","nature"])
-# plt.rcParams.update({
-#     "font.size": 10, 
-#     "axes.labelsize": 12, 
-#     "axes.titlesize": 14,
-#     "xtick.labelsize": 10, 
-#     "ytick.labelsize": 10, 
-#     "legend.fontsize": 10,
-# })
 
 default_font_size = mpl.rcParamsDefault['font.size']
 
