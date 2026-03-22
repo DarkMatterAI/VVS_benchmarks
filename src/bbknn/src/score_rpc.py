@@ -12,7 +12,7 @@ for the EGFR benchmark.
 from __future__ import annotations
 import json, uuid, os, time
 from collections import defaultdict
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from dotenv import load_dotenv; load_dotenv()
 import numpy as np
@@ -167,6 +167,7 @@ class RPCScore:
     timeout     : int     per-message timeout in seconds
     batch_size  : int     max concurrent messages inside **BatchScorer**
     device      : str     "gpu" switches routing key to GPU queue
+    save_dir    : Optional[str] = None, save directory for docking poses
     """
 
     def __init__(
@@ -176,6 +177,7 @@ class RPCScore:
         batch_size: int = 128,
         retries: int = 0,
         device: str = "cpu",
+        save_dir: Optional[str] = None,
     ):
         group = "benchmark_score_gpu" if device == "gpu" else "benchmark_score"
         self.rpc = BatchScorer(
@@ -186,6 +188,7 @@ class RPCScore:
         )
         self.retries = retries
         self.cache: Dict[str, float] = {}
+        self.save_dir = save_dir 
 
     # public ------------------------------------------------------------
     def close(self):
@@ -228,6 +231,9 @@ class RPCScore:
                 missing_payloads.append({"item_data": {"item": smi}})
 
         if missing_payloads:
+            if self.save_dir is not None:
+                for p in missing_payloads:
+                    p["save_dir"] = self.save_dir 
             results = self.rpc.score_batch(missing_payloads)
             for payload, score in zip(missing_payloads, results):
                 if score is None:
@@ -240,4 +246,53 @@ class RPCScore:
             for idx in idxs:
                 out[idx] = sc
         return out
+
+    def score_pairs(
+        self,
+        pairs: List[Tuple[str, str]],
+        save_dir: str,
+    ) -> List[Tuple[float, float]]:
+        """
+        Score (query, result) SMILES pairs, saving docked poses as
+        ``query_<i>.sdf`` / ``result_<i>.sdf`` under *save_dir* on the
+        docking server.
+
+        Always sends every molecule to the server (bypasses the score
+        cache) so that each pair gets its own uniquely-named pose files.
+
+        Parameters
+        ----------
+        pairs    : list of (query_smiles, result_smiles)
+        save_dir : sub-directory under SAVE_DIR / protein on the server
+
+        Returns
+        -------
+        list of (query_score, result_score) tuples.
+        Failed / timed-out entries are returned as ``-np.inf``.
+        """
+        payloads: List[dict] = []
+        for i, (q_smi, r_smi) in enumerate(pairs):
+            payloads.append({
+                "item_data": {"item": q_smi},
+                "save_dir":  save_dir,
+                "save_name": f"query_{i}",
+            })
+            payloads.append({
+                "item_data": {"item": r_smi},
+                "save_dir":  save_dir,
+                "save_name": f"result_{i}",
+            })
+
+        raw = self.rpc.score_batch(payloads)
+
+        pair_scores: List[Tuple[float, float]] = []
+        for i, (q_smi, r_smi) in enumerate(pairs):
+            q_sc = raw[2 * i]     if raw[2 * i]     is not None else -np.inf
+            r_sc = raw[2 * i + 1] if raw[2 * i + 1] is not None else -np.inf
+            self.cache[q_smi] = q_sc
+            self.cache[r_smi] = r_sc
+            pair_scores.append((q_sc, r_sc))
+
+        return pair_scores
+
 # ╰────────────────────────────────────────────────────────────────────╯

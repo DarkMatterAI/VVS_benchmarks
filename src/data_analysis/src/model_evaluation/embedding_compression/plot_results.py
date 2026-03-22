@@ -180,6 +180,15 @@ def _load_knn_dfs():
 
 
 # ╭───────────────────────────── plotting helpers ──────────────────────────────╮
+# plt.style.use(["science", "nature"])
+# plt.rcParams.update({
+#     "font.size": 10,
+#     "axes.labelsize": 12,
+#     "axes.titlesize": 14,
+#     "xtick.labelsize": 10,
+#     "ytick.labelsize": 10,
+#     "legend.fontsize": 10,
+# })
 
 def _write_csv(df: pd.DataFrame | list[dict] | dict, fname: str):
     """Always writes into FIG_DIR/raw/."""

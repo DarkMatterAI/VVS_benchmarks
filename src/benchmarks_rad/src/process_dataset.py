@@ -53,6 +53,8 @@ def build_index(ds_cfg: dict, mode: str):
     out_path  = OUT_ROOT / out_name
     if out_path.exists():
         out_path.unlink()
+        # console.log(f"[green]✓ {out_path.name} already present - skip")
+        # return
 
     console.rule(f"[bold]{name}: fingerprints → HNSW  (limit={limit:,})")
 

@@ -42,6 +42,7 @@ TRAIN_RUNS = [
     "mse_loss",
     "mse_pearson_topk_loss",
     "cos_pearson_topk_loss",
+    # "cond_cos_pearson_topk_loss"
 ]
 
 
@@ -55,9 +56,20 @@ RUN_MAPPING = {
     "mse_loss": "mse_long",
     "cos_pearson_topk_loss": "cos_ref_corr_k_long",
     "mse_pearson_topk_loss": "mse_ref_corr_k_long",
+    # "cond_cos_pearson_topk_loss": "cond_cos_ref_corr_k_long"
 }
 
 K_TRAIN = 10
+
+# plt.style.use(["science", "nature"])
+# plt.rcParams.update({
+#     "font.size": 10,
+#     "axes.labelsize": 12,
+#     "axes.titlesize": 14,
+#     "xtick.labelsize": 10,
+#     "ytick.labelsize": 10,
+#     "legend.fontsize": 10,
+# })
 
 default_font_size = mpl.rcParamsDefault['font.size']
 
@@ -279,6 +291,8 @@ def _maybe_newline(lbl, txt):
 
 def _nice_label(run: str) -> str:
     lbl = []
+    if "cond" in run:
+        lbl = _maybe_newline(lbl, "Cond")
     if "cos" in run:
         lbl = _maybe_newline(lbl, "Cos")
     if "mse" in run:
@@ -291,7 +305,6 @@ def _nice_label(run: str) -> str:
         # lbl = _maybe_newline(lbl, "Rxn Ord")
     else:
         lbl.append(" (L)")
-        # lbl = _maybe_newline(lbl, "(L)")
     return " ".join(lbl) or run
 
 def _gather_train_metrics() -> dict[str, dict[int, dict[int, float]]]:
@@ -305,7 +318,8 @@ def _gather_train_metrics() -> dict[str, dict[int, dict[int, float]]]:
         for ts in (RUN_ROOT / RUN_MAPPING[run]).rglob("trainer_state.json"):
             last = json.loads(ts.read_text())["log_history"][-1]
             for key, val in last.items():
-                if patt not in key:
+                if key[-len(patt):] != patt:
+                # if patt not in key:
                     continue
                 # key example: eval_128->64_p@10
                 sizes = key.replace("eval_", "").split("_p@")[0]
@@ -601,7 +615,7 @@ def make_train_panel() -> tuple[plt.Figure, dict[str, plt.Axes]]:
     vals    = [v for _, v in ordered]
 
     ax_bar.bar(range(len(names)), vals)
-    ax_bar.set_xticks(range(len(names)), names, rotation=0, ha="center", fontsize=16)
+    ax_bar.set_xticks(range(len(names)), names, rotation=0, ha="center", fontsize=15)
     ax_bar.set_ylabel(f"Average Precision at k={K_TRAIN}")
     ax_bar.set_title("Decomposer Loss Comparison")
     for i, v in enumerate(vals):

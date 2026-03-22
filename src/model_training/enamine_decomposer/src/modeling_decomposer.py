@@ -273,27 +273,6 @@ class DecomposerModel(PreTrainedModel):
                  comp_sizes: List[int]):
         compressed = {d: self.compression_heads[str(d)](inputs) for d in comp_sizes}
         return compressed
-    
-    # def decompose(self, 
-    #               inputs:  Dict[int, torch.Tensor],           # {size: [B,size]}
-    #               output_sizes: List[int]):
-    #     hiddens = []
-    #     for input_size in self.config.comp_sizes:
-    #         if input_size not in inputs:
-    #             continue 
-
-    #         h = self.in_proj[str(input_size)](x)  # [B,shared_dim]
-    #         hiddens.append(h)
-
-    #     # for in_size, x in inputs.items():
-    #     #     h = self.in_proj[str(in_size)](x)  # [B,shared_dim]
-    #     #     hiddens.append(h)
-            
-    #     hiddens = torch.stack(hiddens, dim=0) # [n_sizes, B, shared_dim]
-    #     hiddens = self.trunk(hiddens)
-        
-    #     preds = self.out_proj(hiddens, output_sizes) # {size: [n_sizes, B, n_output, size]}
-    #     return preds
 
     def decompose(self, 
                   inputs:  Dict[int, torch.Tensor],           # {size: [B,size]}
@@ -352,6 +331,13 @@ class DecomposerModel(PreTrainedModel):
             if cfg.corr_weight:
                 flat_p = p.flatten(1, 2)
                 flat_t = t.flatten(0, 1)
+
+                # if cfg.self_corr:
+                #     self_corr = sim_loss(flat_p, flat_t, None,
+                #                             cfg.corr_k_vals, cfg.corr_loss_type).mean(-1)
+                #     loss_total += cfg.corr_weight * self_corr.sum()
+                #     for i, in_size in enumerate(cfg.comp_sizes):
+                #         loss_terms[f"{in_size}->{out_size}_corr_self"] = self_corr[i]
 
                 if cfg.ref_corr:
                     with torch.no_grad():

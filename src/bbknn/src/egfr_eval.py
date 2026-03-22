@@ -135,5 +135,71 @@ def main():
     console.log(f"[bold green]Results saved → {out_path}")
 
 
+def main2():
+    args = _cli_args(_load_defaults())
+
+    scorer = RPCScore(
+        "docking_6lud",
+        timeout=args.timeout,
+        batch_size=512,
+        device="cpu",
+    )
+
+    pairs = [
+                (
+                    "CN1CCC(c2ccc(-c3ccc4ncn(C(C(=O)Nc5nccs5)c5ccccc5)c(=O)c4c3)cc2)CC1",
+                    "Cc1ccn2c(N)c(-c3ccc(N(C(=O)c4ccccc4)c4ccc(O)cc4)cc3)nc2c1"
+                ),
+                (
+                    "OCc1ccc(-c2cc3c(NC(CO)c4ccccc4)ncnc3[nH]2)cc1",
+                    "O=C(Nc1ccc(-c2nc3cc(Br)ccc3s2)cc1)NC(CCCO)c1ccccc1"
+                ),
+                (
+                    "COc1cc(N2CCC(N(C)C)CC2)ccc1Nc1ncc(C(=O)OC(C)C)c(-c2c[nH]c3ccccc23)n1",
+                    "Cc1nc(Nc2ccc(N3CCC(O)CC3)cc2C)c2cnn(-c3cccc(F)c3)c2n1"
+                ),
+                (
+                    "Cn1cnc2cc3c(Nc4cccc(Br)c4)ncnc3cc21",
+                    "Cn1ccc2cnc(Nc3cccc(I)c3)nc21"
+                ),
+                (
+                    "CNc1cc2c(Nc3cccc(Cl)c3)ncnc2cn1",
+                    "COc1cc2c(Nc3cccc(CO)c3)ccnc2cc1F"
+                ),
+                (
+                    "C#CCNCC=CC(=O)Nc1cc2c(Nc3ccc(F)c(Cl)c3)c(C#N)cnc2cc1OCC",
+                    "C=C=CCCNC(=O)Nc1ccc2ccn(Cc3ccc(CO)cc3)c2c1"
+                ),
+                (
+                    "OCC(O)CNc1cc2c(Nc3cccc(Br)c3)ncnc2cn1",
+                    "Clc1cc2ncnc(Nc3cncc(Br)c3)c2cc1I"
+                ),
+                (
+                    "COc1cc2ncnc(Nc3cccc(C(F)(F)F)c3)c2cc1OC",
+                    "COc1cc2nc(Nc3cc(C(F)(F)F)ccc3Cl)nc(N)c2cc1OC"
+                ),
+                (
+                    "C=CC(=O)Nc1nc2c(Nc3ccc(F)c(Cl)c3)ncnc2cc1C=CCCN1CCOCC1",
+                    "C=CC1(CC)COCCN1c1ccc(-c2ncn(Cc3ccccc3)c2N)cc1Cl"
+                ),
+                (
+                    "Oc1cc2ncnc(Nc3cccc(Br)c3)c2cc1O",
+                    "Clc1cc2ncnc(Cl)c2cc1NCCc1cccc(Br)c1"
+                ),
+            ]
+
+    pair_scores = scorer.score_pairs(pairs, save_dir="egfr_pairs")
+
+    # ── report ──────────────────────────────────────────────────
+    for i, ((q_smi, r_smi), (q_sc, r_sc)) in enumerate(zip(pairs, pair_scores)):
+        console.log(
+            f"Pair {i}: query={q_sc:+.2f}  result={r_sc:+.2f}  "
+            f"Δ={r_sc - q_sc:+.2f}"
+        )
+
+    scorer.close()
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+    main2()

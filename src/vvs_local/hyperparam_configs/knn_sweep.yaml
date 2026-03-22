@@ -3,27 +3,27 @@ engine_params:
   embedding:
     size: 128
 runs:
-  - name: knn_sweep1
-    params: 
-      vvs_batch_size  : [16, 32, 64, 128]
-      iterations      : [2, 4, 6]
-      exploit_percent : [0.0, 0.25, 0.5]
-      k_nn            : [32, 64, 128, 256]
-      update_type     : [top1]
-      lrs             :
-        - [0, 1000, 2000, 3000, 4000, 5000, 6000]
-        - [0, 2500, 5000, 7500, 10000]
-        - [0, 2500, 5000, 7500, 10000, 20000, 50000]
-    scorers:
-      - plugin           : erbb1_mlp
-        timeout          : 30
-        score_batch_size : 1024
-        concurrency      : 6
-        device           : gpu
-    run_params:
-      inference_budget: 50000
-      runtime_limit: 43200
-      replicas: 3
+  # - name: knn_sweep1
+  #   params: 
+  #     vvs_batch_size  : [16, 32, 64, 128]
+  #     iterations      : [2, 4, 6]
+  #     exploit_percent : [0.0, 0.25, 0.5]
+  #     k_nn            : [32, 64, 128, 256]
+  #     update_type     : [top1]
+  #     lrs             :
+  #       - [0, 1000, 2000, 3000, 4000, 5000, 6000]
+  #       - [0, 2500, 5000, 7500, 10000]
+  #       - [0, 2500, 5000, 7500, 10000, 20000, 50000]
+  #   scorers:
+  #     - plugin           : erbb1_mlp
+  #       timeout          : 30
+  #       score_batch_size : 1024
+  #       concurrency      : 6
+  #       device           : gpu
+  #   run_params:
+  #     inference_budget: 50000
+  #     runtime_limit: 43200
+  #     replicas: 3
   - name: knn_sweep2
     params: 
       vvs_batch_size  : [16, 32, 64]

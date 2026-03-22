@@ -8,25 +8,25 @@ engine_params:
     cache_size   : 1000000
     refresh_every: 100000
 runs:
-  - name: bbknn_final1
-    params: 
-      vvs_batch_size  : [16]
-      iterations      : [4]
-      exploit_percent : [0.5]
-      k_nn            : [5]
-      update_type     : [top1]
-      lrs             :
-        - [0, 1000, 2000, 3000, 4000, 5000, 6000]
-    scorers:
-      - plugin           : erbb1_mlp
-        timeout          : 30
-        score_batch_size : 1024
-        concurrency      : 6
-        device           : gpu
-    run_params:
-      inference_budget: 50000
-      runtime_limit: 43200
-      replicas: 5
+  # - name: bbknn_final1
+  #   params: 
+  #     vvs_batch_size  : [16]
+  #     iterations      : [4]
+  #     exploit_percent : [0.5]
+  #     k_nn            : [5]
+  #     update_type     : [top1]
+  #     lrs             :
+  #       - [0, 1000, 2000, 3000, 4000, 5000, 6000]
+  #   scorers:
+  #     - plugin           : erbb1_mlp
+  #       timeout          : 30
+  #       score_batch_size : 1024
+  #       concurrency      : 6
+  #       device           : gpu
+  #   run_params:
+  #     inference_budget: 50000
+  #     runtime_limit: 43200
+  #     replicas: 5
   - name: bbknn_final2
     params: 
       vvs_batch_size  : [16]

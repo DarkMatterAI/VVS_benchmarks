@@ -8,7 +8,7 @@ natural_product_eval:
   n_classes:    10
   n_per_class:  100
   sizes:        [256]
-  k:            5
+  k:            20
   cpus:         60
   seed:         32
   iterations:   10

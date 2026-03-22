@@ -34,6 +34,11 @@ from transformers import (
 
 from .configuration_decomposer import DecomposerConfig
 from .modeling_decomposer import DecomposerModel, FeedForwardLayer, cross_cosine
+from .decomposer_conditional import (ConditionalDecomposerModel, 
+                                     ConditionalDecomposerConfig, 
+                                     ConditionalDecomposerCollator,
+                                     REACTION_ID_TO_IDX,
+                                     N_REACTIONS)
 
 assert torch.cuda.is_available()
 
@@ -58,10 +63,9 @@ def canonical_order(row):
     columns = ["bb1_id", "bb2_id"]
     return {columns[i]:order[i] for i in range(len(order))}
 
-def get_dataset(max_train=None, max_valid=None, canonical=False):
+def get_dataset(max_train=None, max_valid=None, canonical=False, conditional=False):
     full = ds.load_from_disk(str(DATA))
 
-    # full = full.remove_columns(["canonical_order"])
     valid = full.select(range(VAL_SZ))                 # first {VAL_SZ} M
     train = full.select(range(VAL_SZ, len(full)))      # remaining  50M - VAL_SZ
 
@@ -75,8 +79,12 @@ def get_dataset(max_train=None, max_valid=None, canonical=False):
         valid = valid.map(canonical_order, num_proc=DATA_WORKERS)
         train = train.map(canonical_order, num_proc=DATA_WORKERS)
 
-    valid = valid.remove_columns(["canonical_order"])
-    train = train.remove_columns(["canonical_order"])
+    cols_to_remove = ["canonical_order"]
+    if not conditional:
+        cols_to_remove.append("reaction_ids")
+
+    valid = valid.remove_columns(cols_to_remove)
+    train = train.remove_columns(cols_to_remove)
 
     train_len = len(train)
     train = train.to_iterable_dataset(num_shards=1024)
@@ -206,11 +214,14 @@ p.add_argument("--max_train_size", type=int, default=None,
                help="Optional cap on number of training rows")
 p.add_argument("--max_valid_size", type=int, default=None,
                help="Optional cap on number of validation rows")
+p.add_argument("--conditional", action="store_true")
+p.add_argument("--reaction_dim", type=int, default=64)
 args = p.parse_args()
 
 train_ds, val_ds, train_len = get_dataset(max_train=args.max_train_size, 
                                           max_valid=args.max_valid_size,
-                                          canonical=args.canonical)
+                                          canonical=args.canonical,
+                                          conditional=args.conditional)
 batch_size = 2048
 eval_accum = 64 
 
@@ -219,27 +230,81 @@ for run in args.run_name:
         ln = args.layer_norm_eps
     else:
         ln = None 
-    cfg = DecomposerConfig(
-        input_size=args.input_size,
-        comp_sizes=args.comp_sizes,
-        output_sizes=args.output_sizes,
-        shared_dim=args.shared_dim,
-        n_shared_layers=args.n_shared_layers,
-        n_head_layers=args.n_head_layers,
-        dropout=args.dropout,
-        layer_norm_eps=ln,
-        n_output=args.n_output,
-        n_refs_batch=args.n_refs_batch,
-        n_refs_total=args.n_refs_total,
-        cosine_weight=args.cosine_weight,
-        mse_weight=args.mse_weight,
-        self_corr=args.self_corr,
-        ref_corr=args.ref_corr,
-        input_corr=args.input_corr,
-        corr_weight=args.corr_weight,
-        corr_loss_type=args.corr_loss_type,
-        corr_k_vals=args.corr_k_vals
-    )
+
+    if args.conditional:
+        print("running conditional")
+        collator = ConditionalDecomposerCollator(REACTION_ID_TO_IDX)
+        cfg = ConditionalDecomposerConfig(
+                input_size=args.input_size,
+                n_reactions=N_REACTIONS,
+                reaction_dim=args.reaction_dim,
+                reaction_id_map=REACTION_ID_TO_IDX,
+                comp_sizes=args.comp_sizes,
+                output_sizes=args.output_sizes,
+                shared_dim=args.shared_dim,
+                n_shared_layers=args.n_shared_layers,
+                n_head_layers=args.n_head_layers,
+                dropout=args.dropout,
+                layer_norm_eps=ln,
+                n_output=args.n_output,
+                n_refs_batch=args.n_refs_batch,
+                n_refs_total=args.n_refs_total,
+                cosine_weight=args.cosine_weight,
+                mse_weight=args.mse_weight,
+                self_corr=args.self_corr,
+                ref_corr=args.ref_corr,
+                input_corr=args.input_corr,
+                corr_weight=args.corr_weight,
+                corr_loss_type=args.corr_loss_type,
+                corr_k_vals=args.corr_k_vals
+                )
+        model = ConditionalDecomposerModel(cfg)
+    else:
+        collator = None  # default
+        cfg = DecomposerConfig(
+            input_size=args.input_size,
+            comp_sizes=args.comp_sizes,
+            output_sizes=args.output_sizes,
+            shared_dim=args.shared_dim,
+            n_shared_layers=args.n_shared_layers,
+            n_head_layers=args.n_head_layers,
+            dropout=args.dropout,
+            layer_norm_eps=ln,
+            n_output=args.n_output,
+            n_refs_batch=args.n_refs_batch,
+            n_refs_total=args.n_refs_total,
+            cosine_weight=args.cosine_weight,
+            mse_weight=args.mse_weight,
+            self_corr=args.self_corr,
+            ref_corr=args.ref_corr,
+            input_corr=args.input_corr,
+            corr_weight=args.corr_weight,
+            corr_loss_type=args.corr_loss_type,
+            corr_k_vals=args.corr_k_vals
+        )
+        model = DecomposerModel(cfg)
+
+    # cfg = DecomposerConfig(
+    #     input_size=args.input_size,
+    #     comp_sizes=args.comp_sizes,
+    #     output_sizes=args.output_sizes,
+    #     shared_dim=args.shared_dim,
+    #     n_shared_layers=args.n_shared_layers,
+    #     n_head_layers=args.n_head_layers,
+    #     dropout=args.dropout,
+    #     layer_norm_eps=ln,
+    #     n_output=args.n_output,
+    #     n_refs_batch=args.n_refs_batch,
+    #     n_refs_total=args.n_refs_total,
+    #     cosine_weight=args.cosine_weight,
+    #     mse_weight=args.mse_weight,
+    #     self_corr=args.self_corr,
+    #     ref_corr=args.ref_corr,
+    #     input_corr=args.input_corr,
+    #     corr_weight=args.corr_weight,
+    #     corr_loss_type=args.corr_loss_type,
+    #     corr_k_vals=args.corr_k_vals
+    # )
 
     compute_metrics = RetrievalPrecisionEval(cfg.comp_sizes, 
                                              cfg.output_sizes, 
@@ -247,7 +312,7 @@ for run in args.run_name:
                                              knn_batch_size=1024)
 
 
-    model = DecomposerModel(cfg)
+    # model = DecomposerModel(cfg)
     # heads = _load_heads()
     # embs = _load_embeddings()
 
@@ -306,7 +371,7 @@ for run in args.run_name:
         targs,
         train_dataset=train_ds,
         eval_dataset=val_ds,
-        # data_collator=collate,
+        data_collator=collator,
         compute_metrics=compute_metrics,
     )
 

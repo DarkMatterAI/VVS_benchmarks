@@ -18,6 +18,7 @@ from pathlib import Path
 from functools import partial
 
 import pandas as pd
+import ast 
 import datasets as ds
 import torch
 import torch.nn as nn
@@ -73,7 +74,8 @@ def harmonise_csvs() -> None:
     id2sm  = df_bb.item.to_dict()                         # {row_idx: smiles}
 
     # --- 2.  process assembly CSV chunk-wise ------------------------------
-    CHUNK   = 1_000_000
+    # CHUNK   = 1_000_000
+    CHUNK   = 100_000
     first   = True
     total   = 0
     with Progress(SpinnerColumn(),
@@ -99,7 +101,7 @@ def harmonise_csvs() -> None:
             chunk["bb1_id"]         = new_bb1
             chunk["bb2_id"]         = new_bb2
             chunk["canonical_order"]= canonical            # bool
-            # drop any other columns you don’t need:
+            chunk["reaction_ids"]   = chunk.reaction_ids
 
             # incremental write
             if writer is None:
@@ -110,6 +112,7 @@ def harmonise_csvs() -> None:
 
             total += len(chunk)
             prog.update(task, advance=len(chunk))
+            break 
 
     console.log(f"[green]✓ wrote {total:,} rows → {out_csv}")
 
@@ -132,10 +135,13 @@ def tokenise_products():
 
     ds_tok = ds_raw.map(tok_fn,
                         batched=True, batch_size=1024,
-                        num_proc=CPU_PROCS, remove_columns=["product", "reaction_ids"],
+                        # num_proc=CPU_PROCS, remove_columns=["product", "reaction_ids"],
+                        num_proc=CPU_PROCS, remove_columns=["product"],
                         desc="tokenising")
 
     ds_tok = ds_tok.map(lambda x: {"len": len(x["input_ids"])},
+                        num_proc=CPU_PROCS)
+    ds_tok = ds_tok.map(lambda x: {"reaction_ids": ast.literal_eval(x["reaction_ids"])},
                         num_proc=CPU_PROCS)
     shards=[]
     for i in range(N_GPUS):

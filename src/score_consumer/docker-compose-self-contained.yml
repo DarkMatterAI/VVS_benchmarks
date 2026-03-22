@@ -12,6 +12,7 @@ services:
       - oe_license_file
     volumes:
       - ../blob_store/internal/processed:/code/processed
+      - ../blob_store/internal:/code/internal
     depends_on:
       - rabbitmq
     deploy:

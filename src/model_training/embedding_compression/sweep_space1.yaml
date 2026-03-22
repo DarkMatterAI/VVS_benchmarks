@@ -11,12 +11,12 @@ runs:
            --pearson_loss_weight, 1.0, --decoder_cosine_weight, 1.0,
            --lr, 1e-3, --wd, 0.01, --epochs, 1, --warmup_ratio, 0.1,
            --eval_queries, 500000, --eval_ks, 5, 10, 100]
-  - name: pearson_topk_lr1e3_wd001_2_2
-    args: [--comp_sizes, 512, 256, 128, 64, 32,
-           --encoder_layers, 2, --decoder_layers, 2, --topk_vals, 10, 100, 256,
-           --pearson_loss_weight, 1.0, --decoder_cosine_weight, 1.0,
-           --lr, 1e-3, --wd, 0.01, --epochs, 1, --warmup_ratio, 0.1,
-           --eval_queries, 500000, --eval_ks, 5, 10, 100]
+  # - name: pearson_topk_lr1e3_wd001_2_2
+  #   args: [--comp_sizes, 512, 256, 128, 64, 32,
+  #          --encoder_layers, 2, --decoder_layers, 2, --topk_vals, 10, 100, 256,
+  #          --pearson_loss_weight, 1.0, --decoder_cosine_weight, 1.0,
+  #          --lr, 1e-3, --wd, 0.01, --epochs, 1, --warmup_ratio, 0.1,
+  #          --eval_queries, 500000, --eval_ks, 5, 10, 100]
   - name: pearson_topk_lr1e3_wd001_4_4
     args: [--comp_sizes, 512, 256, 128, 64, 32,
            --encoder_layers, 4, --decoder_layers, 4, --topk_vals, 10, 100, 256,
@@ -35,12 +35,12 @@ runs:
            --mse, 1.0, --decoder_cosine_weight, 1.0,
            --lr, 1e-3, --wd, 0.01, --epochs, 1, --warmup_ratio, 0.1,
            --eval_queries, 500000, --eval_ks, 5, 10, 100]
-  - name: mse_topk_lr1e3_wd001_2_2
-    args: [--comp_sizes, 512, 256, 128, 64, 32,
-           --encoder_layers, 2, --decoder_layers, 2, --topk_vals, 10, 100, 256,
-           --mse, 1.0, --decoder_cosine_weight, 1.0,
-           --lr, 1e-3, --wd, 0.01, --epochs, 1, --warmup_ratio, 0.1,
-           --eval_queries, 500000, --eval_ks, 5, 10, 100]
+  # - name: mse_topk_lr1e3_wd001_2_2
+  #   args: [--comp_sizes, 512, 256, 128, 64, 32,
+  #          --encoder_layers, 2, --decoder_layers, 2, --topk_vals, 10, 100, 256,
+  #          --mse, 1.0, --decoder_cosine_weight, 1.0,
+  #          --lr, 1e-3, --wd, 0.01, --epochs, 1, --warmup_ratio, 0.1,
+  #          --eval_queries, 500000, --eval_ks, 5, 10, 100]
   - name: mse_topk_lr3e4_wd001_4_4
     args: [--comp_sizes, 512, 256, 128, 64, 32,
            --encoder_layers, 4, --decoder_layers, 4, --topk_vals, 10, 100, 256,

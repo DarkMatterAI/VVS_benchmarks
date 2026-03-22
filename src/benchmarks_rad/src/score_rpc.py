@@ -59,6 +59,7 @@ class BatchScorer:
             if time.time() - t0 > self.timeout:
                 print("score_items timeout")
                 break
+                # raise TimeoutError("score_items timeout")
 
         # restore original order
         out = [None] * len(items)

@@ -4,7 +4,9 @@ Benchmark code for the paper [Efficient Search of Ultra-Large Synthesis On-Deman
 
 Code subject to change during peer review process
 
+Below are complete instructions for recreating the analysis in the paper, including downloading and processing raw datasets, running experiments, generating and analyzing results. Running the code may produce slightly different results due to the stochastic nature of several steps in the process. To reproduce paper figures, download the [Zenodo data archive](https://zenodo.org/uploads/18615633) and place in the `src/blob_store/internal` directory.
 
+NOTE: Some benchmarks rely on OpenEye docking and ROCS scoring, which requires an OpenEye license file saved at `./src/score_consumer/secrets/oe_license.txt`
 
 
 ## 1. Download Datasets and Create Artifacts
@@ -32,7 +34,7 @@ cd src/create_artifacts
 ./run_download_files.sh
 ```
 
-Exact CSV files of the Enamine Assembled and Embedding Compression datasets used in this work are available at TODO: ZENODO LINK
+Exact CSV files of the Enamine Assembled and Embedding Compression datasets used in this work are available in the [Zenodo data archive](https://zenodo.org/uploads/18615633).
 
 
 
@@ -61,11 +63,11 @@ cd src/model_training/embedding_compression
 ./train_model1.sh
 ```
 
-NOTE: `process_dataset.sh` pre-computes CLM embeddings, which is slow and requires about 180 GB of disk space.
+NOTE: `process_dataset.sh` pre-computes CLM embeddings, which is slow and requires significant disk space. Processing both datasets requires about 1000 GB disk space and yields about 500 GB of files when finished. 
 
 The training script supports a number of hyperparameters. These can be configured in the `src/model_training/embedding_compression/sweep_space1.yaml` file. See the training file at `src/model_training/embedding_compression/src/train.py` for a full list of supported training arguments.
 
-Exact weights used for this work can be downloaded via [huggingface](https://huggingface.co/entropy/roberta_zinc_compression_encoder)
+Exact weights used for this work can be downloaded via [huggingface](https://huggingface.co/entropy/roberta_zinc_compression_encoder).
 
 #### Embedding Decomposer Models
 
@@ -79,7 +81,7 @@ cd src/model_training/enamine_decomposer
 ./train_model.sh
 ```
 
-NOTE: `process_dataset.sh` pre-computes CLM embeddings, which is slow and requires about 320 GB of disk space.
+NOTE: `process_dataset.sh` pre-computes CLM embeddings, which is slow and requires significant disk space. Processing both datasets requires about 1000 GB disk space and yields about 500 GB of files when finished. 
 
 NOTE: the training code assumes the Embedding Compression models have already been trained and saved to the relevant `blob_store` location (this is done automatically by the Embedding Compression training code). If attempting to run without training the compression models, run the following to save weights to the correct location:
 
@@ -95,99 +97,227 @@ compression_encoder.save_encoders(SAVE_DIR)
 
 The training script supports a number of hyperparameters. These can be configured in the `src/model_training/enamine_decomposer/sweep_space.yaml` file. See the training file at `src/model_training/enamine_decomposer/src/train.py` for a full list of supported training arguments.
 
-Exact weights used for this work can be downloaded via [huggingface](https://huggingface.co/entropy/roberta_zinc_compression_encoder)
+Exact weights of the final decomposer model used for this work can be downloaded via [huggingface](https://huggingface.co/entropy/roberta_zinc_compression_encoder). Weights of various decomposer models trained for loss ablation experiments can be downloaded from the [Zenodo data archive](https://zenodo.org/uploads/18615633).
 
 ## 3. Model Benchmarks and Plot Generation
 
+We perform several evaluations of the Embedding Compression and Embedding Decomposer models. Some analysis scripts rely on hard-coded paths for specific model training runs. To reproduce, download the `training_runs` data directory from the [Zenodo data archive](https://zenodo.org/uploads/18615633).
 
 
-Order of operations:
+#### Embedding Compression Evaluation
 
-1. Create artifacts
-    * Downloads files and creates datasets. Note dataset creation is slow
-    * `cd src/src_processing`
-    * `./run_download_files.sh` (note slow)
-2. Model training
-    * `cd src/model_training`
-    * Train erbb1 mlp model
-        * `cd erbb1_mlp/`
-        * `./process_dataset.sh`
-        * `./train_erbb1_mlp.sh`
-    * Train embedding compression
-        * `cd embedding_compression/`
-        * `./process_dataset.sh`
-        * update `sweep_space.yaml` as desired
-        * `./train_model.sh`
-    * Train decomposer model
-        * `cd enamine_decomposer`
-        * `./process_dataset.sh`
-        * update `sweep_space.yaml` as desired
-        * `./train_model.sh`
-3. Model Benchmarks/Analysis
-    * `cd src/data_analysis`
-    * Embedding compression analysis
-        * `./src/model_evaluation/embedding_compression/run.sh generate` - generate analysis data
-        * `./src/model_evaluation/embedding_compression/run.sh plot` - plot results
-    * Enamine decomposer analysis
-        * `./src/model_evaluation/enamine_decomposer/run.sh generate` - generate analysis data
-        * `./src/model_evaluation/enamine_decomposer/run.sh plot` - plot results
-4. Set up scoring endpoints
-    * Set up OpenEye license file
-        * Place OpenEye license at `./src/score_consumer/secrets/oe_license.txt`
-    * If running with VVS:
-        * Start VVS with Qdrant and Triton plugins enabled
-        * `cd score_consumer/`
-        * `./manage_records.sh create`
-        * `docker compose up -d --build`
-        * `docker compose scale score_consumer={SCORE_WORKERS}` for the desired number of parallel workers
-    * If running without VVS:
-        * Note the `vvs_platform` cannot be run without VVS
-        * `cd score_consumer`
-        * `docker compose -f docker-compose-self-contained.yml` up -d --build
-        * `docker compose -f docker-compose-self-contained.yml scale score_consumer={SCORE_WORKERS}` for the desired number of parallel workers
-5. BBKNN Benchmarks
-    * Benchmarks
-        * `cd src/bbknn`
-        * `./run {bbknn|natprod|egfr}`
-            * Note EGFR benchmark requires scoring functions to be set up
-    * Analysis
-        * `cd src/data_analysis`
-        * `./src/bbknn/run.sh {cosine|sampling|egfr}`
-6. VVS Local Benchmarks
-    * Local benchmarks require scoring endpoints to be running
-    * `cd src/vvs_local`
-    * Build indices (required for later benchmarks)
-        * `./run.sh generate_indices`
-    * Embedding size latency benchmarks
-        * `./run.sh compression_eval`
-    * Learning rate sweeps
-        * `./run.sh lr_sweep --cfg lr_sweep_bbknn.yaml`
-        * `./run.sh lr_sweep --cfg lr_sweep_knn.yaml`
-    * VVS Local Benchmarks
-        * `./run.sh hyperparam_sweep --cfg bbknn_sweep.yaml --run_type sweep`
-    * Analysis
-        * `cd src/data_analysis`
-        * `./src/vvs_local/run.sh {sweep|embed}`
-7. Other Benchmarks
-    * Run SyntheMol benchmarks
-        * `cd benchmarks_synthemol/`
-        * `./run.sh sweep` 
-    * Run Thompson Sampling benchmarks
-        * `cd benchmarks_ts/`
-        * `./run.sh sweep` 
-    * Run RxnFlow benchmarks
-        * `cd benchmarks_rxnflow/`
-        * `./run.sh sweep` 
-    * Run RAD benchmarks
-        * `cd benchmarks_rad/`
-        * `./process_dataset.sh`
-        * `./run.sh sweep`
-    * Compile best hyperparameters
-        * `cd data_analysis`
-        * `./src/benchmarks/run.sh sweep`
-    * Run Final benchmarks
-        * Re-run the `./run.sh sweep` command as as `./run.sh final`
-    * Plot results
-        * `cd data_analysis`
-        * `./src/benchmarks/run.sh final`
+Run the following:
 
+```
+cd src/data_analysis
+./src/model_evaluation/embedding_compression/run.sh generate
+./src/model_evaluation/embedding_compression/run.sh plot
+```
+
+This code generates:
+
+* Four pannel figure showing ablations for loss function and model size
+* Qualitative comparison plots for retrieval performance at different embedding sizes 
+
+#### Embedding Decomposer Evaluation
+
+Run the following:
+
+```
+cd src/data_analysis
+./src/model_evaluation/enamine_decomposer/run.sh generate
+./src/model_evaluation/enamine_decomposer/run.sh plot
+```
+
+This code generates:
+
+* Loss function ablation plot
+* Qualitative retrieval performance plots 
+* Heatmap of retrieval accuracy for different input/output embedding size combinations 
+* Plot evaluating "flipped predictions" and retrieval miss rate as a function of SMILES length
+
+
+## 4. Set Up Scoring Endpoints
+
+Subsequent benchmarks make use of different scoring functions as optimization targets. These are set up using docker compose. The compose framework creates the following containers:
+
+* `score_consumer` - runs CPU scoring functions
+* `score_consumer_gpu` - runs GPU scoring functions
+* `rabbitmq` - queue system used by benchmarks to execute scoring functions
+
+NOTE: OpenEye docking and ROCS scoring functions require an OpenEye license file saved at `./src/score_consumer/secrets/oe_license.txt`
+
+Run the following to create the scoring functions:
+
+```
+cd src/score_consumer
+docker compose -f docker-compose-self-contained.yml up -d --build
+docker compose -f docker-compose-self-contained.yml scale score_consumer={SCORE_WORKERS}
+```
+
+NOTE: the docker compose scale command creates replicas of the CPU score consumer for parallel processing. Data for the paper was generated with `SCORE_WORKERS=64`
+
+NOTE: to clean up score consumers when no longer needed, run `docker compose -f docker-compose-self-contained.yml down`
+
+## 5. BBKNN Evaluations
+
+We perform several evaluations of the BBKNN algorithm. Run the following:
+
+```
+cd src/bbknn
+./run.sh bbknn
+./run.sh natprod
+./run.sh egfr
+```
+
+This performs the following evaluations:
+
+* `./run.sh bbknn` - runs BBKNN with query molecules from the Enamine Assembled and Lyu 140M datasets
+* `./run.sh natprod` - runs BBKNN with query molecules from the COCONUT natural product dataset
+* `./run.sh egfr` - runs BBKNN with query molecules of known EGFR ligands and scores the results with the OpenEye docking scoring endpoint. Also produces poses of specific known EGFR ligands and similar molecules retrieved by BBKNN
+
+After generating data, evaluate and plot the results via:
+
+```
+cd src/data_analysis
+./src/bbknn/run.sh cosine
+./src/bbknn/run.sh sampling
+./src/bbknn/run.sh egfr 
+```
+
+This performs the following evaluations:
+
+* `./src/bbknn/run.sh cosine` - compares query and result molecules on the basis of cosine and Tanimoto similarity. Generates aggregate plots of cosine and Tanimoto similarity correlation and panel plots of molecules where cosine and Tanimoto disagree strongly on molecule similarity
+* `./src/bbknn/run.sh sampling` - generates bar plots of query/result similarity for Enamine Assembled, Lyu 140M and COCONUT molecules. Generates plots of total results vs BBKNN `k` parameter. Generates molecule grid plots of example query/result pairs from Enamine Assembled, Lyu 140M and COCONUT molecules
+* `./src/bbknn/run.sh egfr ` - generates plots of docking score gain vs sampling depth and example query/result molecule pairs with corresponding docking score
+
+
+## 6. VVS Benchmarks
+
+We perform several evaluations of the VVS algorithm
+
+#### Setup
+
+Several retrieval indices are pre-computed and used in downstream benchmarks. 
+
+```
+cd src/vvs_local
+./run.sh generate_indices
+```
+
+#### Embedding size latency
+
+This code evaluates retrieval latency at different embedding sizes
+
+```
+cd src/vvs_local
+./run.sh compression_eval
+```
+
+#### Learning Rate Sweeps
+
+This code evaluates VVS performance over a wide range of learning rates to determine learning rate sensitivity. Learning rate sweeps are performed in the enumerated space using KNN retrieval (configured via `src/vvs_local/lr_sweep_knn.yaml`) and decomposed space using BBKNN (configured via `src/vvs_local/lr_sweep_bbknn.yaml`).
+
+```
+cd src/vvs_local
+./run.sh lr_sweep --cfg lr_sweep_bbknn.yaml
+./run.sh lr_sweep --cfg lr_sweep_knn.yaml
+```
+
+#### VVS Benchmarks
+
+This code performs hyperparameter sweeps for VVS (configured via `src/vvs_local/hyperparam_configs/bbknn_sweep.yaml`).
+
+```
+cd src/vvs_local
+./run.sh hyperparam_sweep --cfg bbknn_sweep.yaml --run_type sweep
+```
+
+#### Data Analysis 
+
+This code generates plots of embedding compression retrieval performance, VVS hyperparameter boxplots, VVS learning rate sweeps, and VVS repeat SMILES histogram.
+
+```
+cd src/data_analysis
+./src/vvs_local/run.sh sweep
+./src/vvs_local/run.sh embed
+```
+
+## 7. Comparison Benchmarks
+
+We compare VVS to several other search methods. Each benchmark method first runs a hyperparameter sweep. Three replicas are run for each hyperparameter configuration against the `erbb1_mlp` score function. After all benchmarks are run, the results are analyzed to determine the best set of hyperparameters. Each method is then run for five replicas using the best set of hyperparameters against all score functions.
+
+#### Hyperparameter sweeps
+
+Hyperparameters tested are configured via a `sweep_space.yaml` file in the corresponding benchmark folder
+
+SyntheMol:
+
+```
+cd benchmarks_synthemol/
+./run.sh sweep
+```
+
+Thompson Sampling:
+
+```
+cd benchmarks_ts/
+./run.sh sweep
+```
+
+RxnFlow:
+
+```
+cd benchmarks_rxnflow/
+./run.sh sweep
+```
+
+RAD:
+
+Note that `process_dataset.sh` only needs to be run once.
+
+```
+cd benchmarks_rad/
+./process_dataset.sh
+./run.sh sweep
+```
+
+VVS:
+
+VVS hyperparameter sweeps are run in the above VVS section
+
+#### Compile best results
+
+This code parses all sweep runs to determine the best set of hyperparameters for each method
+
+```
+cd data_analysis
+./src/benchmarks/run.sh sweep
+```
+
+This produces a summary CSV at `src/blob_store/internal/data_analysis/benchmarks/sweep/best_hyperparams.csv` which can be used to update the final hyperparameters.
+
+#### Run Final Benchmarks
+
+For each method, update the corresponding `final_space.yaml` config file and run benchmarks with the final hyperparameters.
+
+```
+cd src/{benchmarks_synthemol | benchmarks_ts | benchmarks_rxnflow | benchmarks_rad}
+./src/benchmarks/run.sh final
+```
+
+For VVS final benchmarks, run 
+
+```
+cd src/vvs_local
+./run.sh hyperparam_sweep --cfg bbknn_final.yaml --run_type final
+```
+
+#### Plot Results
+
+To generate plots of benchmark comparisons, run:
+
+```
+cd src/data_analysis
+./src/benchmarks/run.sh final
+```

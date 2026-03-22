@@ -2,6 +2,7 @@ datasets:
   - name: d4_138m
     table:    d4_138m
     full_rows:      100000000
+    # full_rows:      138312677
     debug_rows:     20000
 
     fp_size:   1024
