@@ -75,7 +75,7 @@ used, and the cosine/Tanimoto similarity of the analogue to the query. A preview
 the top results is printed to the console on completion. An example result file is provided at `src/bbknn/src/demo/demo_results.csv`.
 
 ### Expected run time
-The demo completes in approximately 5 on a normal desktop with a single
+The demo completes in approximately 5-10 minutes on a normal desktop with a single
 GPU (the first run is slower, as containers are built for the first time and model weights are downloaded from HuggingFace).
 
 ## 4. Instructions for Use
