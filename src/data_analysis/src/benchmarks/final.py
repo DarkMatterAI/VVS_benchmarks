@@ -401,8 +401,6 @@ def plot_agg_bars(agg: pd.DataFrame, prefix: str = ""):
             rts += [BREAK_AT]
         max_runtime = max(rts)
         
-        # max_runtime = max([rm + rs for rm, rs in zip(r_means, r_stds)] + [BREAK_AT])
-
         # Bars
         for mi, m in enumerate(methods):
             row = sub[sub["method"] == m]

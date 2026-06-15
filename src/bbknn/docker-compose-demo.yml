@@ -1,0 +1,18 @@
+services:
+  bbknn_demo:
+    build:
+      context: .
+      dockerfile: bbknn.Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ../blob_store:/code/blob_store
+    entrypoint: []
+    command: ["bash", "-c", "echo 'Run via ./run_demo.sh'"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['${BBKNN_DEVICE_ID}']
+              capabilities: [gpu]

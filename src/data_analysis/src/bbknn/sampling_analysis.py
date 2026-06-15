@@ -102,6 +102,7 @@ def plot_sampling_curves(df: pd.DataFrame, latent_size: int):
       (A) cumulative results vs k_bb  + quadratic fit
       (B) running mean similarities vs sampling depth
     """
+
     # ────────────────── summarise & prepare data ───────────────────
     summary = (summarise_bbknn(
                   df[df.chemical_class == ENAMINE_CLASS]
@@ -163,7 +164,6 @@ def plot_sampling_curves(df: pd.DataFrame, latent_size: int):
     (RAW_DIR / "bbknn_summary.csv").write_text(summary.to_csv(index=False))
 
     console.log(f"[green]✓ wrote {panel_out}")
-
 
 def plot_class_similarity(df: pd.DataFrame, max_rank: int=10, k: int = 10):
     """Bar-chart comparing NatProd classes vs Enamine (Top-k & mean)."""

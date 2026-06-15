@@ -112,7 +112,7 @@ def harmonise_csvs() -> None:
 
             total += len(chunk)
             prog.update(task, advance=len(chunk))
-            break 
+            # break 
 
     console.log(f"[green]✓ wrote {total:,} rows → {out_csv}")
 

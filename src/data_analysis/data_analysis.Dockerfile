@@ -3,8 +3,6 @@ FROM python:3.10-slim
 WORKDIR /code
 ENV PIP_NO_CACHE_DIR=1
 
-# --- OS deps for RDKit and latex ---
-
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     libxrender1 \

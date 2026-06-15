@@ -98,12 +98,12 @@ palette_cb_ext = ["#ebac23", "#b80058",  "#008cf9", "#006e00", "#d163e6",
                    "#b24502", "#00bbad",
                     "#ff9287", "#5954d6", "#00c6f8",
                     "#878500", "#00a76c", "#979797", "#1e1e1e"]
-# palette_cb_ext = palette_cb_ext[2:] + palette_cb_ext[:2]
 
 plt.rcParams['axes.prop_cycle'] = plt.cycler(color=palette_cb_ext)
 plt.rcParams['font.weight'] = 'bold'
 plt.rcParams['axes.labelweight'] = 'bold'
 plt.rcParams['axes.titleweight'] = 'bold'
+
 
 COLORS = {
     "blue": "008cf9",

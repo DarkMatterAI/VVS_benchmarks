@@ -136,6 +136,7 @@ def main():
 
 
 def main2():
+    # generates poses for specific pairs 
     args = _cli_args(_load_defaults())
 
     scorer = RPCScore(
@@ -201,5 +202,5 @@ def main2():
 
 
 if __name__ == "__main__":
-    # main()
-    main2()
+    main()
+    # main2()

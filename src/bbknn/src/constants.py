@@ -5,7 +5,8 @@ import torch
 # Disable HF tokenizer multi-proc noise
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-BLOB         = Path("/code/blob_store").resolve()
+# BLOB         = Path("/code/blob_store").resolve()
+BLOB = Path(os.environ.get("BLOB_STORE", "/code/blob_store")).resolve()
 DB_PATH      = BLOB / "internal" / "processed" / "d4_138m" / "database.db"
 TBL_NAME     = "d4_138m"
 ASSM_CSV     = BLOB / "internal" / "training_datasets" / "enamine_assembled" / "enamine_assembled.csv"

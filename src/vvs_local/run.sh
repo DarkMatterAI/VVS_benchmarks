@@ -39,13 +39,3 @@ docker compose \
   -v "${BLOB_STORE}:/code/blob_store" \
   vvs_local_bench \
   python -m "${PY_MOD}" "$@"
-
-# docker compose \
-#   -f "$COMPOSE_FILE" \
-#   run --rm \
-#   -e PYTHONUNBUFFERED=1 \
-#   -e CUDA_VISIBLE_DEVICES="0,1" \
-#   -v "${BLOB_STORE}:/code/blob_store" \
-#   vvs_local_bench \
-#   python -m "${PY_MOD}" "$@"
-
