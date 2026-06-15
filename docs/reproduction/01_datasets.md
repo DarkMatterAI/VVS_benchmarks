@@ -39,5 +39,5 @@ cd src/create_artifacts
 
 > **Tip:** Exact CSV files of the Enamine Assembled and Embedding Compression
 > datasets used in this work are available in the
-> [Zenodo data archive](https://zenodo.org/uploads/18615633), and can be used in
+> [Zenodo data archive](https://zenodo.org/records/18615633), and can be used in
 > place of regenerating them.

@@ -32,5 +32,5 @@ OpenEye license. Save the license file at:
 ## Reproducing figures exactly
 Running the code may produce slightly different results due to the stochastic
 nature of several steps. To reproduce the paper figures exactly, download the
-[Zenodo data archive](https://zenodo.org/uploads/18615633) and place it in the
+[Zenodo data archive](https://zenodo.org/records/18615633) and place it in the
 `src/blob_store/internal` directory.

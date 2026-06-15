@@ -7,7 +7,7 @@ and generates the corresponding paper figures.
 
 > **Note:** Some analysis scripts rely on hard-coded paths to specific model
 > training runs. To reproduce, download the `training_runs` directory from the
-> [Zenodo data archive](https://zenodo.org/uploads/18615633).
+> [Zenodo data archive](https://zenodo.org/records/18615633).
 
 ## Embedding Compression Evaluation
 

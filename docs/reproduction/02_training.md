@@ -81,4 +81,4 @@ training arguments.
 > **Pretrained weights:** The final decomposer model is available on
 > [HuggingFace](https://huggingface.co/entropy/roberta_zinc_compression_encoder).
 > Weights of the decomposer models trained for the loss ablation experiments are
-> available in the [Zenodo data archive](https://zenodo.org/uploads/18615633).
+> available in the [Zenodo data archive](https://zenodo.org/records/18615633).

@@ -93,6 +93,6 @@ Reproducing all datasets, models, experiments, and figures are broken down into 
 
 > Results may differ slightly from the paper due to stochasticity in several steps.
 > To reproduce paper figures exactly, download the
-> [Zenodo data archive](https://zenodo.org/uploads/18615633) and place it in
+> [Zenodo data archive](https://zenodo.org/records/18615633) and place it in
 > `src/blob_store/internal`.
 
